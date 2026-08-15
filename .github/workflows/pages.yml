@@ -1,4 +1,10 @@
-name: Deploy invitation to GitHub Pages
+name: Publish invitation to gh-pages
+
+# GitHub Pages serves this repo from the gh-pages branch, so publishing is just
+# a matter of keeping that branch level with the working branch. (The Actions
+# deployment source was not an option here: creating the Pages site needs admin
+# rights that GITHUB_TOKEN does not have, so the site was enabled by pushing
+# gh-pages instead — which GitHub picks up automatically.)
 
 on:
   push:
@@ -6,32 +12,17 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# Let a running deploy finish rather than cancelling it mid-publish.
 concurrency:
-  group: pages
+  group: publish-gh-pages
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
-      # enablement: true turns Pages on for the repo if it isn't already.
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Fast-forward gh-pages to this commit
+        run: git push origin HEAD:gh-pages

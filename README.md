@@ -60,6 +60,14 @@ by whole numbers in CSS. Downscaling pixel art turns it to mush, so each width
 in `styles.css` is an exact multiple of its source — worth knowing before
 changing any sprite size.
 
+## Live
+
+<https://milinisius.github.io/Invitation/>
+
+GitHub Pages serves the `gh-pages` branch. `.github/workflows/pages.yml`
+fast-forwards that branch on every push to the working branch, so pushing here
+republishes the site.
+
 ## Running it
 
 Any static server:
