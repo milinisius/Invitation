@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Very Official Spider-Man Invitation</title>
+<meta name="description" content="An invitation to watch the new Spider-Man movie. There is no No button. Well — there is, but it doesn't work.">
+<meta name="theme-color" content="#0b0b14">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="A Very Official Spider-Man Invitation">
+<meta property="og:description" content="Press start. You have exactly one option and it's yes.">
+<meta property="og:image" content="assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preload" href="assets/font/press-start-2p-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div id="confetti" class="confetti-layer" aria-hidden="true"></div>
+
+<noscript>
+  <div class="panel noscript-panel">
+    <img class="sprite sprite-lg" src="assets/mask.gif" alt="A pixel-art Spider-Man mask">
+    <h1 class="question">WILL YOU WATCH<br>THE NEW <span class="hl">SPIDER-MAN</span><br>MOVIE WITH ME?</h1>
+    <p class="hint">This invitation needs JavaScript for the full experience —
+      but the question stands, and the answer is yes.</p>
+  </div>
+</noscript>
+
+<main id="app">
+
+  <!-- ─────────────────────────── BOOT ─────────────────────────── -->
+  <section class="screen is-active" id="screen-boot" aria-label="Start">
+    <div class="panel boot-panel">
+      <img class="sprite sprite-lg float" src="assets/mask.gif" alt="A pixel-art Spider-Man mask, blinking">
+      <pre class="boot-log" id="bootLog" aria-live="polite"></pre>
+      <div class="loadbar" aria-hidden="true"><span id="loadbarFill"></span></div>
+      <button class="btn btn-yes blink-slow" id="startBtn" hidden>PRESS START</button>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── ASK ──────────────────────────── -->
+  <section class="screen" id="screen-ask" aria-label="The question">
+    <div class="panel ask-panel">
+      <p class="kicker" id="askTo">INCOMING TRANSMISSION</p>
+
+      <div class="bubble" id="bubble">
+        <span id="bubbleText">a very official invitation</span>
+      </div>
+
+      <img class="sprite sprite-lg float" id="askSprite" src="assets/mask.gif"
+           alt="A pixel-art Spider-Man mask">
+
+      <h1 class="question">WILL YOU WATCH<br>THE NEW <span class="hl">SPIDER-MAN</span><br>MOVIE WITH ME?</h1>
+
+      <div class="choice-field" id="choiceField">
+        <button class="btn btn-yes" id="yesBtn">YES</button>
+        <button class="btn btn-no" id="noBtn">NO</button>
+      </div>
+
+      <p class="hint" id="askHint">(choose carefully)</p>
+    </div>
+  </section>
+
+  <!-- ────────────────────────── CELEBRATE ─────────────────────── -->
+  <section class="screen" id="screen-yay" aria-label="Yes">
+    <div class="panel yay-panel">
+      <img class="sprite sprite-xl" src="assets/swing.gif" alt="Pixel Spider-Man swinging on a web">
+      <h1 class="question big-yes">IT'S A DATE!</h1>
+      <p class="sub">correct answer. the only answer, really.</p>
+      <div class="heart-row" aria-hidden="true">
+        <img class="sprite sprite-sm" src="assets/heart.gif" alt="">
+        <img class="sprite sprite-sm" src="assets/heart.gif" alt="">
+        <img class="sprite sprite-sm" src="assets/heart.gif" alt="">
+      </div>
+      <button class="btn btn-yes" id="toPlanBtn">NOW PICK A DAY &gt;</button>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── PLAN ────────────────────────── -->
+  <section class="screen" id="screen-plan" aria-label="Pick the date, time and place">
+    <div class="panel plan-panel">
+      <div class="steps" id="steps">
+        <span class="step is-on" data-step="1">1 DAY</span>
+        <span class="step" data-step="2">2 TIME</span>
+        <span class="step" data-step="3">3 PLACE</span>
+      </div>
+
+      <!-- step 1 : calendar -->
+      <div class="substep is-active" id="step-date">
+        <h2 class="h2"><img class="sprite sprite-sm" src="assets/clapper.gif" alt="">WHEN ARE WE GOING?</h2>
+        <div class="cal">
+          <div class="cal-head">
+            <button class="btn btn-ghost btn-tiny" id="prevMonth" aria-label="Previous month">&lt;</button>
+            <span id="calLabel">—</span>
+            <button class="btn btn-ghost btn-tiny" id="nextMonth" aria-label="Next month">&gt;</button>
+          </div>
+          <div class="cal-dow" aria-hidden="true">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div class="cal-grid" id="calGrid" role="grid" aria-label="Calendar"></div>
+        </div>
+        <p class="hint" id="dateHint">pick any square. today is highlighted.</p>
+      </div>
+
+      <!-- step 2 : time -->
+      <div class="substep" id="step-time">
+        <h2 class="h2"><img class="sprite sprite-sm" src="assets/ticket.gif" alt="">WHAT TIME?</h2>
+        <div class="chips" id="timeChips">
+          <button class="chip" data-time="14:30">14:30<small>matinee</small></button>
+          <button class="chip" data-time="17:00">17:00<small>golden hour</small></button>
+          <button class="chip" data-time="19:30">19:30<small>prime time</small></button>
+          <button class="chip" data-time="21:45">21:45<small>late show</small></button>
+        </div>
+        <label class="custom-row">
+          <span>or exactly:</span>
+          <input type="time" id="customTime" aria-label="Custom time">
+        </label>
+      </div>
+
+      <!-- step 3 : place -->
+      <div class="substep" id="step-place">
+        <h2 class="h2"><img class="sprite sprite-sm" src="assets/popcorn.gif" alt="">WHERE?</h2>
+        <div class="chips chips-wide" id="placeChips">
+          <button class="chip" data-place="The big cinema in town">The big cinema in town</button>
+          <button class="chip" data-place="IMAX, obviously">IMAX, obviously</button>
+          <button class="chip" data-place="The cosy one with the sofas">The cosy one with the sofas</button>
+          <button class="chip" data-place="Your place + projector">Your place + projector</button>
+        </div>
+        <label class="custom-row">
+          <span>or:</span>
+          <input type="text" id="customPlace" maxlength="60" placeholder="type a place…" aria-label="Custom place">
+        </label>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="planBack">&lt; BACK</button>
+        <button class="btn btn-yes" id="planNext" disabled>NEXT &gt;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── FOOD ────────────────────────── -->
+  <section class="screen" id="screen-food" aria-label="Pick the food">
+    <div class="panel food-panel">
+      <h2 class="h2"><img class="sprite sprite-sm" src="assets/popcorn.gif" alt="">WHAT SHOULD WE EAT?</h2>
+      <p class="hint">pick as many as you want. this is not a test — actually it is, and you're passing.</p>
+      <div class="food-grid" id="foodGrid"></div>
+      <label class="custom-row">
+        <span>craving:</span>
+        <input type="text" id="customFood" maxlength="60" placeholder="something else…" aria-label="Other food">
+      </label>
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="foodBack">&lt; BACK</button>
+        <button class="btn btn-yes" id="foodNext">LOCK IT IN &gt;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── TICKET ───────────────────────── -->
+  <section class="screen" id="screen-ticket" aria-label="Your ticket">
+    <div class="panel ticket-panel">
+      <h2 class="h2 center">ONE (1) DATE — ADMIT TWO</h2>
+
+      <div class="ticket" id="ticket">
+        <div class="ticket-main">
+          <p class="ticket-title">SPIDER-MAN</p>
+          <p class="ticket-sub">+ the two of us</p>
+          <dl class="ticket-rows">
+            <div><dt>FOR</dt><dd id="tkFor">you</dd></div>
+            <div><dt>DAY</dt><dd id="tkDay">—</dd></div>
+            <div><dt>TIME</dt><dd id="tkTime">—</dd></div>
+            <div><dt>PLACE</dt><dd id="tkPlace">—</dd></div>
+            <div><dt>SNACKS</dt><dd id="tkFood">—</dd></div>
+          </dl>
+        </div>
+        <div class="ticket-stub">
+          <img class="sprite sprite-sm" src="assets/mask.gif" alt="">
+          <span class="stub-text">ADMIT<br>TWO</span>
+        </div>
+      </div>
+
+      <p class="hint center" id="ticketNote">screenshot this, or send it back to me</p>
+
+      <div class="nav-row nav-wrap">
+        <button class="btn btn-yes" id="shareBtn">SEND IT TO ME</button>
+        <button class="btn btn-ghost" id="icsBtn">ADD TO CALENDAR</button>
+        <button class="btn btn-ghost" id="restartBtn">START OVER</button>
+      </div>
+
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+      <img class="sprite sprite-lg float credits-sprite" src="assets/swing.gif" alt="">
+    </div>
+  </section>
+
+</main>
+
+<img class="crawler" id="crawler" src="assets/spider.gif" alt="" aria-hidden="true">
+
+<script src="app.js"></script>
+</body>
+</html>
