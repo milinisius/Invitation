@@ -24,5 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fast-forward gh-pages to this commit
-        run: git push origin HEAD:gh-pages
+      # gh-pages is a pure deploy mirror, so replace its tip with a single
+      # commit holding just the files the site actually serves. (A plain push
+      # cannot work here: checkout is shallow, so git has no gh-pages history
+      # to fast-forward against.)
+      - name: Publish site files to gh-pages
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf .github tools
+          git checkout --orphan gh-pages-tmp
+          git add -A
+          git commit -m "Publish ${GITHUB_SHA}"
+          git push --force origin gh-pages-tmp:gh-pages
